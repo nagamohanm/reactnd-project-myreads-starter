@@ -3,8 +3,14 @@ import {Link} from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
 import ReactLoading from 'react-loading'
 
-
+/**
+ * SearchBooks Component
+ */
 class SearchBooks extends Component {
+    /**
+     *
+     * @type {{maxResults: number, query: string, searchResults: Array, resultsFetched: boolean}}
+     */
     state = {
         maxResults: 20,
         query: '',
@@ -12,8 +18,13 @@ class SearchBooks extends Component {
         resultsFetched: true
     }
 
+    /**
+     * Update query and fetch books from server based on the query
+     * @param query
+     */
     updateQueryAndFetchBooks = (query) => {
         this.setState({query, resultsFetched: false, searchResults: []})
+        // Display loading icon by setting a timeout of 2000ms
         setTimeout(() => {
             BooksAPI.search(query, this.state.maxResults).then((books) => {
                 this.setState({
@@ -24,6 +35,11 @@ class SearchBooks extends Component {
         }, 2000)
     }
 
+    /**
+     *  Update shelf of the selected book.
+     * @param book
+     * @param e
+     */
     updateBook = (book, e) => {
         const values = {
             book: book,
@@ -34,6 +50,10 @@ class SearchBooks extends Component {
         }
     }
 
+    /**
+     * render
+     * @returns {string}
+     */
     render() {
         const {query, searchResults, resultsFetched} = this.state
 

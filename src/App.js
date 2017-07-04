@@ -12,13 +12,24 @@ import SearchBooks from './SearchBooks'
 import '../node_modules/react-notifications/lib/notifications.css'
 import './App.css'
 
+/**
+ * BooksApp Component
+ */
 class BooksApp extends React.Component {
+    /**
+     *
+     * @type {{allBooks: Array, books: {}, isLoading: boolean}}
+     */
     state = {
         allBooks: [],
         books: {},
         isLoading: false
     }
 
+    /**
+     * Fetch all books in the following shelfs ['currentlyReading', 'wantToRead', 'read']
+     * @returns {Promise.<TResult>}
+     */
     fetchMyReads() {
         return BooksAPI.getAll().then((books) => {
             let myBooks = {
@@ -35,6 +46,9 @@ class BooksApp extends React.Component {
         })
     }
 
+    /**
+     * Fetch books and display them after component is mounted
+     */
     componentDidMount() {
         this.setState({isLoading: true})
         this.fetchMyReads().then(() => {
@@ -42,6 +56,10 @@ class BooksApp extends React.Component {
         })
     }
 
+    /**
+     * Updates book and re-render the component
+     * @param bookToUpdate
+     */
     updateBook(bookToUpdate) {
         BooksAPI.update(bookToUpdate.book, bookToUpdate.shelf).then((shelfBooks) => {
             this.fetchMyReads().then(() => {
@@ -50,6 +68,10 @@ class BooksApp extends React.Component {
         })
     }
 
+    /**
+     * render
+     * @returns {string}
+     */
     render() {
         return (
             <div className="app">

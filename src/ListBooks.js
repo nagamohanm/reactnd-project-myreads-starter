@@ -2,11 +2,23 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 
+/**
+ * ListBooks Component
+ */
 class ListBooks extends Component {
+    /**
+     *
+     * @type {{books: (*)}}
+     */
     static propTypes = {
         books: PropTypes.object.isRequired
     }
 
+    /**
+     *  Update shelf of the selected book.
+     * @param book
+     * @param e
+     */
     updateBook = (book, e) => {
         const values = {
             book: book,
@@ -17,6 +29,10 @@ class ListBooks extends Component {
         }
     }
 
+    /**
+     * render
+     * @returns {string}
+     */
     render() {
         const {books} = this.props
 
