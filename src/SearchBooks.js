@@ -1,23 +1,27 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
-
+import ReactLoading from 'react-loading'
 
 
 class SearchBooks extends Component {
     state = {
         maxResults: 20,
         query: '',
-        searchResults: []
+        searchResults: [],
+        resultsFetched: true
     }
 
-    updateQuery = (query) => {
-        BooksAPI.search(query, this.state.maxResults).then((books) => {
-            this.setState({
-                query: query,
-                searchResults: books instanceof Array ? books : []
+    updateQueryAndFetchBooks = (query) => {
+        this.setState({query, resultsFetched: false, searchResults: []})
+        setTimeout(() => {
+            BooksAPI.search(query, this.state.maxResults).then((books) => {
+                this.setState({
+                    searchResults: books instanceof Array ? books : [],
+                    resultsFetched: true
+                })
             })
-        })
+        }, 2000)
     }
 
     updateBook = (book, e) => {
@@ -25,13 +29,13 @@ class SearchBooks extends Component {
             book: book,
             shelf: e.target.value
         }
-        if(this.props.onUpdateBook) {
+        if (this.props.onUpdateBook) {
             this.props.onUpdateBook(values);
         }
     }
 
     render() {
-        const {query, searchResults} = this.state
+        const {query, searchResults, resultsFetched} = this.state
 
         return (
             <div className="search-books">
@@ -42,11 +46,16 @@ class SearchBooks extends Component {
                             type="text"
                             placeholder="Search by title or author"
                             value={query}
-                            onChange={(event) => this.updateQuery(event.target.value)}
+                            onChange={(event) => this.updateQueryAndFetchBooks(event.target.value)}
                         />
                     </div>
                 </div>
                 <div className="search-books-results">
+                    {!resultsFetched && (
+                        <div className="loading">
+                            <ReactLoading type="bubbles" color="#444"/>
+                        </div>
+                    )}
                     <ol className="books-grid">
                         {searchResults.map((book) => (
                             <li key={book.id}>
@@ -63,7 +72,7 @@ class SearchBooks extends Component {
                                         {book.imageLinks === undefined && (
                                             <div className="book-cover" style={{
                                                 width: 128,
-                                                height: 193,
+                                                height: 193
                                             }}></div>
                                         )}
 
@@ -74,12 +83,12 @@ class SearchBooks extends Component {
                                                 </option>
                                                 <option value="wantToRead">Want to Read</option>
                                                 <option value="read">Read</option>
-                                                <option value="none">None</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div className="book-title">{book.title}</div>
-                                    <div className="book-authors">{book.authors !== undefined ? book.authors.join(", ") : ''}</div>
+                                    <div
+                                        className="book-authors">{book.authors !== undefined ? book.authors.join(", ") : ''}</div>
                                 </div>
                             </li>
                         ))}

@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
 class ListBooks extends Component {
     static propTypes = {
@@ -12,7 +12,7 @@ class ListBooks extends Component {
             book: book,
             shelf: e.target.value
         }
-        if(this.props.onUpdateBook) {
+        if (this.props.onUpdateBook) {
             this.props.onUpdateBook(values);
         }
     }
@@ -57,7 +57,8 @@ class ListBooks extends Component {
                                                         backgroundImage: `url(${book.imageLinks.thumbnail})`
                                                     }}></div>
                                                     <div className="book-shelf-changer">
-                                                        <select onChange={(e) => this.updateBook(book, e)} value={book.shelf}>
+                                                        <select onChange={(e) => this.updateBook(book, e)}
+                                                                value={book.shelf}>
                                                             <option value="none" disabled>Move to...</option>
                                                             <option value="currentlyReading">Currently Reading
                                                             </option>
@@ -89,7 +90,8 @@ class ListBooks extends Component {
                                                         backgroundImage: `url(${book.imageLinks.thumbnail})`
                                                     }}></div>
                                                     <div className="book-shelf-changer">
-                                                        <select onChange={(e) => this.updateBook(book, e)} value={book.shelf}>
+                                                        <select onChange={(e) => this.updateBook(book, e)}
+                                                                value={book.shelf}>
                                                             <option value="none" disabled>Move to...</option>
                                                             <option value="currentlyReading">Currently Reading
                                                             </option>
@@ -121,7 +123,8 @@ class ListBooks extends Component {
                                                         backgroundImage: `url(${book.imageLinks.thumbnail})`
                                                     }}></div>
                                                     <div className="book-shelf-changer">
-                                                        <select onChange={(e) => this.updateBook(book, e)} value={book.shelf}>
+                                                        <select onChange={(e) => this.updateBook(book, e)}
+                                                                value={book.shelf}>
                                                             <option value="none" disabled>Move to...</option>
                                                             <option value="currentlyReading">Currently Reading
                                                             </option>

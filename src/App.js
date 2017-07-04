@@ -1,6 +1,8 @@
 import React from 'react'
-import { Route } from 'react-router-dom'
+import {Route} from 'react-router-dom'
 import {NotificationContainer, NotificationManager} from 'react-notifications';
+import ReactLoading from 'react-loading'
+
 import * as BooksAPI from './BooksAPI'
 
 import ListBooks from './ListBooks'
@@ -13,11 +15,12 @@ import './App.css'
 class BooksApp extends React.Component {
     state = {
         allBooks: [],
-        books: {}
+        books: {},
+        isLoading: false
     }
 
-    componentDidMount() {
-        BooksAPI.getAll().then((books) => {
+    fetchMyReads() {
+        return BooksAPI.getAll().then((books) => {
             let myBooks = {
                 currentlyReading: [],
                 wantToRead: [],
@@ -28,28 +31,21 @@ class BooksApp extends React.Component {
             myBooks.wantToRead = books.filter(book => book.shelf === 'wantToRead')
             myBooks.read = books.filter(book => book.shelf === 'read')
 
-            this.setState({ books: myBooks, allBooks: books })
+            this.setState({books: myBooks, allBooks: books})
+        })
+    }
+
+    componentDidMount() {
+        this.setState({isLoading: true})
+        this.fetchMyReads().then(() => {
+            this.setState({isLoading: false})
         })
     }
 
     updateBook(bookToUpdate) {
-        BooksAPI.update(bookToUpdate.book, bookToUpdate.shelf).then((books) => {
-            let myBooks = this.state.books;
-
-            let indexToUpdate = this.state.allBooks.map(book => book.id).indexOf(bookToUpdate.book.id)
-
-            BooksAPI.get(bookToUpdate.book.id).then((updatedBook) => {
-                console.log(indexToUpdate)
-                console.log(updatedBook)
-                if(indexToUpdate > -1) this.state.allBooks.splice(indexToUpdate, 1, updatedBook)
-
-                myBooks.currentlyReading = this.state.allBooks.filter(book => books.currentlyReading.includes(book.id) );
-                myBooks.wantToRead = this.state.allBooks.filter(book => books.wantToRead.includes(book.id) );
-                myBooks.read = this.state.allBooks.filter(book => books.read.includes(book.id) );
-
-                this.setState({ books: myBooks, allBooks: this.state.allBooks })
-
-                NotificationManager.success('Book added to ' + bookToUpdate.shelf , '');
+        BooksAPI.update(bookToUpdate.book, bookToUpdate.shelf).then((shelfBooks) => {
+            this.fetchMyReads().then(() => {
+                NotificationManager.success('Book added to "' + bookToUpdate.shelf + '"', '');
             })
         })
     }
@@ -57,29 +53,38 @@ class BooksApp extends React.Component {
     render() {
         return (
             <div className="app">
-                <Route
-                    path="/search"
-                    render={( {history} ) => (
-                        <SearchBooks
-                            onUpdateBook={(bookToUpdate) => {
-                                this.updateBook(bookToUpdate)
-                            }}
+                {this.state.isLoading && (
+                    <div className="loading">
+                        <ReactLoading type="bubbles" color="#444"/>
+                    </div>
+                )}
+                {!this.state.isLoading && (
+                    <div>
+                        <Route
+                            path="/search"
+                            render={() => (
+                                <SearchBooks
+                                    onUpdateBook={(bookToUpdate) => {
+                                        this.updateBook(bookToUpdate)
+                                    }}
+                                />
+                            )}
                         />
-                    )}
-                />
-                <Route
-                    exact
-                    path="/"
-                    render={( {history} ) => (
-                        <ListBooks
-                            onUpdateBook={(bookToUpdate) => {
-                                this.updateBook(bookToUpdate)
-                            }}
-                            books={this.state.books}
+                        <Route
+                            exact
+                            path="/"
+                            render={() => (
+                                <ListBooks
+                                    onUpdateBook={(bookToUpdate) => {
+                                        this.updateBook(bookToUpdate)
+                                    }}
+                                    books={this.state.books}
+                                />
+                            )}
                         />
-                    )}
-                />
-                <NotificationContainer />
+                        <NotificationContainer />
+                    </div>
+                )}
             </div>
         )
     }
