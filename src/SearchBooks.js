@@ -23,16 +23,22 @@ class SearchBooks extends Component {
      * @param query
      */
     updateQueryAndFetchBooks = (query) => {
-        this.setState({query, resultsFetched: false, searchResults: []})
-        // Display loading icon by setting a timeout of 2000ms
-        setTimeout(() => {
-            BooksAPI.search(query, this.state.maxResults).then((books) => {
-                this.setState({
-                    searchResults: books instanceof Array ? books : [],
-                    resultsFetched: true
+        if(query.length === 0) {
+            this.setState({query, searchResults: []})
+        }
+
+        if(query.length > 0) {
+            this.setState({query, resultsFetched: false, searchResults: []})
+            // Display loading icon by setting a timeout of 2000ms
+            setTimeout(() => {
+                BooksAPI.search(query, this.state.maxResults).then((books) => {
+                    this.setState({
+                        searchResults: books instanceof Array ? books : [],
+                        resultsFetched: true
+                    })
                 })
-            })
-        }, 2000)
+            }, 2000)
+        }
     }
 
     /**
@@ -77,8 +83,8 @@ class SearchBooks extends Component {
                         </div>
                     )}
                     <ol className="books-grid">
-                        {searchResults.map((book) => (
-                            <li key={book.id}>
+                        {searchResults.map((book, i) => (
+                            <li key={i}>
                                 <div className="book">
                                     <div className="book-top">
                                         {book.imageLinks !== undefined && (
